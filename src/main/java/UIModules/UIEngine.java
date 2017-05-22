@@ -82,46 +82,7 @@ public class UIEngine {
         return ready.ready(enem);
     }
 
-    public void exit()
-    {
+    public void exit() {
         board.exit();
     }
-    public static void main(String[] args) {
-        UIEngine e = new UIEngine();
-
-        String name = e.getUserName();
-        e.setUserName(name);
-        e.setSymbol("0");
-        if(e.ready("wanna play against ... ")) {
-
-            e.setEnemy("enem");
-            e.init();
-            System.out.println(e.getMove());
-            e.setMove("X", 0, 0);
-            System.out.println(e.getMove());
-            e.setMove("X", 0, 1);
-            System.out.println(e.getMove());
-            e.setMove("X", 0, 2);
-            System.out.println(e.getMove());
-            e.setMove("X", 1, 0);
-            System.out.println(e.getMove());
-
-            if(e.ready("wanna reset?")) {
-                e.reset();
-
-            }
-            else {
-                e.exit();
-               
-            }
-        }
-        else
-        {
-            e.exit();
-        }
-
-    }
-
-
-
 }
