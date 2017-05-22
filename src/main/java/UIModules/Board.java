@@ -14,6 +14,12 @@ class Board extends JFrame {
     private String enemy;
     private String username;
     private ArrayList<Integer> position = new ArrayList<Integer>();
+    boolean moved = false;
+
+    public void setUsername(String un)
+    {
+        username = un;
+    }
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
@@ -27,6 +33,28 @@ class Board extends JFrame {
         return this.symbol;
     }
 
+    public boolean moved(){
+        return moved;
+    }
+    public void setMoved(){
+        moved = false;
+    }
+
+    public void setMove(String s, int i, int j)
+    {
+        buttons[i][j].setText(s);
+        buttons[i][j].setEnabled(false);
+
+    }
+
+    public ArrayList<Integer> getPosition()
+    {
+        ArrayList<Integer> temp = new ArrayList<>(position);
+        position.clear();
+        return temp;
+    }
+
+
     public String[][] getBoard() {
         String[][] matrix = new String[3][3];
 
@@ -37,21 +65,22 @@ class Board extends JFrame {
         return matrix;
     }
 
-    public Board(String username, String symbol, String enemy)                                        //Tic tac default constructor which adds and dimensions Jframe
+    public Board()                                        //Tic tac default constructor which adds and dimensions Jframe
     {
         super();
         this.symbol = symbol;
         this.enemy = enemy;
         this.username = username;
         frame.setSize(350, 450);
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);        //Setting dimension of Jframe and setting parameters
-        frame.setVisible(true);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.setVisible(false);
         frame.setResizable(false);
     }
 
 
     public void initialize()             //Initialize tic tac toe game board
     {
+        frame.setVisible(true);
         JPanel mainPanel = new JPanel(new BorderLayout());         //create main panel container to put layer others on top
         JPanel menu = new JPanel(new BorderLayout());
         JPanel game = new JPanel(new GridLayout(3, 3));                     //Create two more panels with layouts for buttons
@@ -92,7 +121,7 @@ class Board extends JFrame {
                         buttons[i][j].setEnabled(false);
                         position.add(i);
                         position.add(j);
-
+                        moved = true;
                     }
         }
     }
@@ -100,7 +129,6 @@ class Board extends JFrame {
     public void lockButtons() {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
-                if (buttons[i][j].getText() != "")
                     buttons[i][j].setEnabled(false);
 
     }
@@ -108,7 +136,7 @@ class Board extends JFrame {
     public void unlockButtons() {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
-                if (buttons[i][j].getText() != "")
+                if (buttons[i][j].getText() == "")
                     buttons[i][j].setEnabled(true);
 
     }
@@ -125,10 +153,13 @@ class Board extends JFrame {
         }
     }
 
-
+    public void repaint()
+    {
+        frame.repaint();
+    }
     public static void main(String[] args)
     {
-        Board board = new Board("Vlad","X","Cristi");         //main method and instantiating tic tac object and calling initialize function
+        Board board = new Board();         //main method and instantiating tic tac object and calling initialize function
         board.initialize();
     }
 }
