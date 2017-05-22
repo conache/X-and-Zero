@@ -42,6 +42,7 @@ public class Client implements Runnable {
              this.setUsername( sc.nextLine() );
              response = sendUsername();
          }
+
         while( response.equals("used") );
         System.out.println(response);
         System.out.println("Waiting for opponent...");

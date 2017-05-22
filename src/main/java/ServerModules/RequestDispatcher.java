@@ -21,13 +21,15 @@ public class RequestDispatcher {
         }
 
         String s = components[0].trim();
-        if (s.equals("username")) {
-            return GameManager.instance().addUser(client, components[1].trim());
-
-        } else if (s.equals("opponent")) {
-            return GameManager.instance().assignOpponent(client);
+        switch( s ){
+            case "username":
+                return GameManager.instance().addUser(client, components[1].trim());
+            case "opponent":
+                return GameManager.instance().assignOpponent(client);
+            default:
+                return  "Request not recognised";
         }
-        return null;
+
     }
 
 }
