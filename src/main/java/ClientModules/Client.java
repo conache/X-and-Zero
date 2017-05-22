@@ -1,7 +1,5 @@
 package ClientModules;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,31 +8,26 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client implements Runnable {
-    private static  Integer nr = 0;
+
     private Socket socket;
-    private String symbol;
     private String username;
     private final Thread th;
     private PrintWriter out;
     private BufferedReader in;
 
-    public Client(String server, Integer serverPort) throws IOException {
-        nr++;
-        this.th = new Thread(this, nr+" thread");
+
+    public Client(String server, Integer serverPort) throws Exception {
+
+        this.th = new Thread(this);
         socket = new Socket(server, serverPort);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
-        in.readLine();
         th.start();
 
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void run() {
@@ -47,7 +40,15 @@ public class Client implements Runnable {
         System.out.println("Opponent: "+response);
         System.out.println("Starting game...");
         response = requestStartGame();
-        //playGame(response);
+        System.out.println(response);
+        beginGame(response);
+
+    }
+
+    private void beginGame(String initialData ){
+
+        String[] components = initialData.split(" ");
+        Game.instance().start(out,in,components[0].charAt(0));
 
     }
 
@@ -57,6 +58,7 @@ public class Client implements Runnable {
         String response;
 
         do {
+            //String username ux.getUserName();
             String username = sc.nextLine();
             response = sendMessage( "username "+username);
 
