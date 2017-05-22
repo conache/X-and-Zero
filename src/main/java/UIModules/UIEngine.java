@@ -1,5 +1,6 @@
 package UIModules;
 
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
@@ -9,11 +10,13 @@ public class UIEngine {
 
     Board board;
     UserNameInput nameInput;
+    Ready ready;
 
     public UIEngine()
     {
         nameInput = new UserNameInput();
         board = new Board();
+        ready = new  Ready();
     }
     public String getUserName()
     {
@@ -56,10 +59,6 @@ public class UIEngine {
         board.setMove(symbol, i, j);
     }
 
-    public String[][] getMatrix()
-    {
-        return board.getBoard();
-    }
 
     public void init()
     {
@@ -78,33 +77,48 @@ public class UIEngine {
         board.reset();
     }
 
+    public boolean ready(String enem)
+    {
+        return ready.ready(enem);
+    }
+
+    public void exit()
+    {
+        board.exit();
+    }
     public static void main(String[] args) {
         UIEngine e = new UIEngine();
 
         String name = e.getUserName();
         e.setUserName(name);
         e.setSymbol("0");
-        e.setEnemy("enem");
-        e.init();
-        System.out.println(e.getMove());
-        e.setMove("X",0,0);
-        System.out.println(e.getMove());
-        e.setMove("X",0,1);
-        System.out.println(e.getMove());
-        e.setMove("X",0,2);
-        System.out.println(e.getMove());
-        e.setMove("X",1,0);
-        System.out.println(e.getMove());
-        String[][] matrix = e.getMatrix();
+        if(e.ready("wanna play against ... ")) {
 
-        int a,b;
-        for (a=0;a<3;a++)
-        {
-            for (b=0;b<3;b++)
-                System.out.print(matrix[a][b] + " ");
-            System.out.println();
+            e.setEnemy("enem");
+            e.init();
+            System.out.println(e.getMove());
+            e.setMove("X", 0, 0);
+            System.out.println(e.getMove());
+            e.setMove("X", 0, 1);
+            System.out.println(e.getMove());
+            e.setMove("X", 0, 2);
+            System.out.println(e.getMove());
+            e.setMove("X", 1, 0);
+            System.out.println(e.getMove());
+
+            if(e.ready("wanna reset?")) {
+                e.reset();
+
+            }
+            else {
+                e.exit();
+               
+            }
         }
-
+        else
+        {
+            e.exit();
+        }
 
     }
 
