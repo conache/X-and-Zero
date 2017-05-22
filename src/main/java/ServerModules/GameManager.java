@@ -57,12 +57,12 @@ public class GameManager {
 
     public synchronized String addUser(String address, String name){
 
-        if( username.get( name ) != null ) {
-            return "used";
-        }else{
-            thread.put(name, Thread.currentThread());
-            username.put(address, name);
+        for(String key: username.keySet() ){
+            if( username.get(key).equals(name) ) return "used";
         }
+
+        thread.put(name, Thread.currentThread());
+        username.put(address, name);
 
         return "username assigned";
     }

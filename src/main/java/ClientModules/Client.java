@@ -1,11 +1,14 @@
 package ClientModules;
 
+import UIModules.UIEngine;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+
 
 public class Client implements Runnable {
 
@@ -17,6 +20,9 @@ public class Client implements Runnable {
     private Game game;
     private char symbol;
     private char opponentSymbol;
+    private UIEngine ui;
+    private boolean hasFlag;
+    private boolean won;
 
     public Client(String server, Integer serverPort) throws Exception {
 
@@ -24,6 +30,7 @@ public class Client implements Runnable {
         socket = new Socket(server, serverPort);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+        this.ui = new UIEngine();
         in.readLine();
         initUsername();
         th.start();
@@ -35,15 +42,33 @@ public class Client implements Runnable {
         this.username = username;
     }
 
-    public void run() {
+    private boolean wantsEnemy(){
+        String response;
+
+        if( ui.ready("Do you want to play against a random user?") ){
+
+            System.out.println("Waiting for opponent...");
+            response = getOpponentUsername();
+            System.out.println("Opponent: "+response);
+            ui.setEnemy(response);
+
+            return true;
+
+        }else{
+            //elimina din baza de date
+        }
+
+        return false;
+    }
+
+    private void startNewGameSession(){
 
         String response;
-        System.out.println("Waiting for opponent...");
-        response = getOpponentUsername();
-        System.out.println("Opponent: "+response);
+
         System.out.println("Starting game...");
         response = requestStartGame();
         System.out.println(response);
+        ui.init();
         try {
             playGame(response);
         } catch (IOException e) {
@@ -52,44 +77,92 @@ public class Client implements Runnable {
 
     }
 
-    private void playGame(String initialData ) throws IOException {
-        boolean won;
-        String response;
+    public void run() {
+
+        while( wantsEnemy() ){
+            startNewGameSession();
+            if( !game.full() ){
+
+                String message = game.won(symbol) ? "Congatulations!! You won! " : "We are sorry :( You lost! ";
+
+                if(  !ui.ready(message+"Do you want to play again?") ){
+
+                }
+
+            }else{
+
+                if ( ui.ready("This game has no winner! Do you want to play again?") ) {
+
+                    startNewGameSession();
+                }
+
+            }
+        }
+
+    }
+
+    private void assignUserData( String initialData){
+
+        won = false;
         String[] components = initialData.split(" ");
         this.symbol = components[0].charAt(0);
         this.opponentSymbol = symbol == 'X' ? '0' : 'X' ;
-        boolean hasFlag = components[1].equals("flag");
+        hasFlag = components[1].equals("flag");
         this.game = new Game( 3,3, symbol );
 
-        int[] positions;
+    }
+
+    private void move() throws IOException {
+
+        ArrayList<Integer> positions;
+        String response;
+
+        System.out.println("Your turn");
+        positions = ui.getMove();
+        out.println("hit "+positions.get(0)+" "+positions.get(1)+" flag");
+        game.hit( positions.get(0), positions.get(1), symbol);
+        response = in.readLine();
+        System.out.println( "Server response:" + response );
+        ui.setMove(String.valueOf(symbol), positions.get(0), positions.get(1));
+        hasFlag = false;
+
+    }
+
+
+    private void waitMove() throws IOException {
+
         Integer linie, coloana;
+        String response;
+        String[] components;
+
+        System.out.println("Waiting for opponent's move...");
+
+        response = in.readLine();
+        System.out.println("Opponent:"+response);
+
+        components = response.split(" ");
+        linie = Integer.parseInt(components[1]);
+        coloana = Integer.parseInt(components[2]);
+
+        ui.setMove(String.valueOf(opponentSymbol), linie, coloana);
+        game.hit(linie,coloana, opponentSymbol);
+
+    }
+
+    private void playGame(String initialData ) throws IOException {
+
+        assignUserData(initialData);
+
 
         do{
             if( hasFlag ) {
                 game.showBoard();
-                System.out.println("Your turn");
-                positions = getMove();
-                out.println("hit "+positions[0]+" "+positions[1]+" flag");
-                game.hit( positions[0], positions[1], symbol);
-                response = in.readLine();
-                System.out.println( "Server response:" + response );
-                hasFlag = false;
+                move();
                 won = game.won(symbol);
-                if(won){
-                    System.out.println("Ai castigat");
-                }
-                System.out.println(won);
-            }else{
+            }else {
                 game.showBoard();
-                System.out.println("Waiting for opponent's move...");
-                response = in.readLine();
-                components = response.split(" ");
-                System.out.println("Opponent:"+response);
-                linie = Integer.parseInt(components[1]);
-                coloana = Integer.parseInt(components[2]);
-                game.hit(linie,coloana, opponentSymbol);
-                won = game.won( opponentSymbol );
-                if( won ) System.out.println("Ai pierdut");
+                waitMove();
+                won = game.won(opponentSymbol);
                 hasFlag = true;
 
             }
@@ -98,25 +171,13 @@ public class Client implements Runnable {
 
     }
 
-
-    private int[] getMove(){
-        Scanner sc = new Scanner(System.in);
-        int[] positions = new int[2];
-        System.out.println("Linie");
-        positions[0] = sc.nextInt();
-        System.out.println("Coloana");
-        positions[1] = sc.nextInt();
-        return positions;
-    }
-
     private String sendUsername(){
 
-        Scanner sc = new Scanner(System.in);
         String response;
 
         do {
-            //String username ux.getUserName();
-            String username = sc.nextLine();
+
+            String username = ui.getUserName();
             response = sendMessage( "username "+ username);
 
         } while( response.equals("used") );

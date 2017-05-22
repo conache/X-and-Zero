@@ -54,7 +54,7 @@ public class UIEngine {
 
     }
 
-     public void setMove(String symbol, int i, int j){
+    public void setMove(String symbol, int i, int j){
 
         board.setMove(symbol, i, j);
     }
