@@ -1,66 +1,45 @@
 package ClientModules;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 /**
  * Created by cristi on 5/22/17.
  */
 public class Game {
-    private static Game game;
     private Board board;
-    private char symbol;
-    private char opponentSymbol;
 
-    private Game(){
-        this.board = new Board();
+    public Game(int lines, int columns, char symbol){
+        this.board = new Board( lines, columns);
     }
 
-    public static Game instance(){
-
-        if ( game == null )
-            return new Game();
-        return game;
-
+    public void hit(Integer linie, Integer coloana, char symbol){
+        board.update(linie,coloana, symbol);
     }
 
-    //add ux object
-    public void start(PrintWriter out, BufferedReader in, char symbol){
-        this.opponentSymbol = symbol == 'X' ? '0' : 'X';
-
+    public boolean won(char symbol){
+        return board.hasDiagonal(symbol) || board.hasRow(symbol) || board.hasCol(symbol);
     }
-//
-//
-//    void parseOponentMessage(String message){
-//
-//    }
-//
-//    public void hit(){
-//
-//        System.out.println("Get hit from fe");
-//        //ux.getMove();
-//        //update hit in local matrix
-//        //send hit to server
-//
-//    }
-//
-//    public void getHit(){
-//
-//    }
-//
-//    public void playGame(String flagMessage) throws IOException {
-//
-//        String response;
-//
-//        if( flagMessage.toLowerCase().trim().equals("flag") ) {
-//            hit();
-//
-//        }else{
-//            getHit();
-//        }
-//
-//
-//    }
+
+    public boolean full() {
+
+        char[][] b = board.getMatrixRepresentation();
+
+        for (int i = 0; i < b.length; i++) {
+            for (int j = 0; j < b.length; j++) {
+                if (b[i][j] == '#') return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void showBoard(){
+        char[][] b = board.getMatrixRepresentation();
+
+        for( int i=0; i < b.length; i++){
+            for( int j=0; j < b.length; j++){
+                System.out.print( b[i][j]+" ");
+            }
+            System.out.println();
+        }
+    }
 
 }

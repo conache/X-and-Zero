@@ -14,13 +14,10 @@ public class RequestDispatcher {
     }
 
     public String dispatch(String message) throws Exception {
+
         String[] components = message.split(" ");
-
-        if( components.length != 2){
-            return "Invalid number of arguments in request";
-        }
-
         String s = components[0].trim();
+
         switch( s ){
             case "username":
                 return GameManager.instance().addUser(client, components[1].trim());
@@ -28,6 +25,8 @@ public class RequestDispatcher {
                 return GameManager.instance().assignOpponent(client);
             case "start":
                 return GameManager.instance().startGame(client);
+            case "hit":
+                return GameManager.instance().moveFrom(client, message);
             default:
                 return  "Request not recognised";
         }

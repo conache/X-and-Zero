@@ -1,5 +1,7 @@
 package ServerModules;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,4 +96,30 @@ public class GameManager {
 
     }
 
+    public String moveFrom(String address, String message){
+
+        String user = username.get(address);
+        String op = opponent.get(user);
+        Socket opSocket = getSocketOf(op);
+        PrintWriter out = null;
+
+        try {
+            out = new PrintWriter( opSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        out.println(message);
+
+        return "Move sent to other user";
+    }
+
+    private Socket getSocketOf(String user){
+
+        for(String key: socket.keySet() ){
+            if( username.get(key).equals(user) ) return socket.get(key);
+        }
+
+        return null;
+    }
 }
