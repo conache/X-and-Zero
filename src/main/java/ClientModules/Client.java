@@ -35,43 +35,67 @@ public class Client implements Runnable {
     }
 
     public void run() {
-        Scanner sc = new Scanner(System.in);
+
         String response;
-
-         do {
-             this.setUsername( sc.nextLine() );
-             response = sendUsername();
-         }
-
-        while( response.equals("used") );
+        response = sendUsername();
         System.out.println(response);
         System.out.println("Waiting for opponent...");
         response = getOpponentUsername();
         System.out.println("Opponent: "+response);
+        response = startGame();
+
 
     }
 
     private String sendUsername(){
-        out.println("username "+this.getUsername());
 
-        try {
-            return in.readLine();
-        } catch (IOException e) {
-            System.out.println("Error sending username");
-            e.printStackTrace();
-        }
+        Scanner sc = new Scanner(System.in);
+        String response;
 
-        return null;
+        do {
+            String username = sc.nextLine();
+            response = sendMessage( "username "+username);
+
+        } while( response.equals("used") );
+
+        this.setUsername( username );
+
+        return response;
+    }
+
+    private String sendMessage(String message){
+
+        out.println(message);
+        return getResponseFromServer(message);
+
     }
 
     private String getOpponentUsername(){
+
+        String message = "opponent username";
+        return sendMessage(message);
+
+    }
+
+    private String startGame(){
+
+        String message = "start game";
+        return sendMessage(message);
+
+    }
+
+    private String getResponseFromServer(String message){
+
+        String response = null;
         try {
-            out.println("opponent username");
-            return in.readLine();
+            response = in.readLine();
         } catch (IOException e) {
-            System.out.println("Error getting opponent username");
+            System.out.println("Error reading response for message:" + message);
             e.printStackTrace();
         }
-        return null;
-    }
+        return response;
+
+    };
+
+
 }

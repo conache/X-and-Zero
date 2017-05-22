@@ -46,6 +46,7 @@ public class GameManager {
         return opponent.get(user);
     }
 
+
     public synchronized String addUser(String address, String name){
 
         if( username.get( name ) != null ) {
