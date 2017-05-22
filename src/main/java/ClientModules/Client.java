@@ -1,5 +1,7 @@
 package ClientModules;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,6 +10,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client implements Runnable {
+    private static  Integer nr = 0;
     private Socket socket;
     private String symbol;
     private String username;
@@ -16,8 +19,8 @@ public class Client implements Runnable {
     private BufferedReader in;
 
     public Client(String server, Integer serverPort) throws IOException {
-
-        this.th = new Thread(this, username + " thread");
+        nr++;
+        this.th = new Thread(this, nr+" thread");
         socket = new Socket(server, serverPort);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
@@ -42,8 +45,9 @@ public class Client implements Runnable {
         System.out.println("Waiting for opponent...");
         response = getOpponentUsername();
         System.out.println("Opponent: "+response);
-        response = startGame();
-
+        System.out.println("Starting game...");
+        response = requestStartGame();
+        //playGame(response);
 
     }
 
@@ -77,7 +81,7 @@ public class Client implements Runnable {
 
     }
 
-    private String startGame(){
+    private String requestStartGame(){
 
         String message = "start game";
         return sendMessage(message);

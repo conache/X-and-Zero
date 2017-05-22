@@ -26,6 +26,8 @@ public class RequestDispatcher {
                 return GameManager.instance().addUser(client, components[1].trim());
             case "opponent":
                 return GameManager.instance().assignOpponent(client);
+            case "start":
+                return GameManager.instance().startGame(client);
             default:
                 return  "Request not recognised";
         }
