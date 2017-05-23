@@ -136,7 +136,6 @@ public class Client implements Runnable {
                 String message = game.won(symbol) ? "Congatulations, "+username+"!! You won! " : "We are sorry, "+username+" :( You lost! ";
 
                 if(  !ui.ready(message+"Do you want to play again?") ){
-
                     break;
                 }
 
@@ -171,7 +170,7 @@ public class Client implements Runnable {
 
         ArrayList<Integer> positions;
         String response;
-
+        ui.unlockBoard();
         System.out.println("Your turn, "+ this.username );
         System.out.println("Get move for "+this.username+" "+this.ui);
         positions = this.ui.getMove();
@@ -191,6 +190,7 @@ public class Client implements Runnable {
         String response;
         String[] components;
 
+        ui.lockBoard();
         System.out.println("Waiting for opponent's move...");
 
         response = in.readLine();

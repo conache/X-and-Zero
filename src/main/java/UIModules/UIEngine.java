@@ -65,7 +65,6 @@ public class UIEngine {
         board.initialize();
         setMove("X",2,2);
         reset();
-        board.lockButtons();
     }
 
     public void setEnemy(String enem)
@@ -77,7 +76,6 @@ public class UIEngine {
     {
 
         board.reset();
-        board.unlockButtons();
 
     }
 
@@ -92,5 +90,13 @@ public class UIEngine {
 
     public String toString(){
         return  "Ui element with user: "+board.getUsername();
+    }
+
+    public void lockBoard(){
+        board.lockButtons();
+    }
+
+    public void unlockBoard(){
+        board.unlockButtons();
     }
 }
