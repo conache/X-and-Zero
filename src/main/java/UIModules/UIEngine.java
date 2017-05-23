@@ -65,6 +65,7 @@ public class UIEngine {
         board.initialize();
         setMove("X",2,2);
         reset();
+        board.lockButtons();
     }
 
     public void setEnemy(String enem)
@@ -74,7 +75,10 @@ public class UIEngine {
 
     public void reset()
     {
+
         board.reset();
+        board.unlockButtons();
+
     }
 
     public boolean ready(String enem)
