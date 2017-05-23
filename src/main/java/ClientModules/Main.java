@@ -8,7 +8,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         new Client("localhost", 8100);
-        System.out.println("finished");
 
     }
 }

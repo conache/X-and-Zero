@@ -103,7 +103,7 @@ public class GameManager {
 
     }
 
-    public synchronized String disconnect(String address){
+    public String disconnect(String address){
 
         System.out.println("Disconnecting user "+username.get(address));
 

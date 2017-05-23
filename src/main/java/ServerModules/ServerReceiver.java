@@ -1,5 +1,6 @@
 package ServerModules;
 
+import javax.xml.bind.annotation.W3CDomHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,7 +59,7 @@ public class ServerReceiver implements Runnable {
             String message = in.readLine();
 
             if(message != null && !message.isEmpty() ){
-                System.out.println(message);
+                System.out.println("Server receiver: "+message);
                 String response = dispatcher.dispatch(message);
                 out.println(response);
                 if( message.equals("disconnect user") ) {

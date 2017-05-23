@@ -36,11 +36,14 @@ public class Client implements Runnable {
        if ( initUsername() ) {
             this.th = new Thread(this);
             th.start();
-        }else{
-            ui.exit();
-            disconnectUser();
-        }
+       }else endGame();
 
+    }
+
+    public void endGame(){
+        ui.exit();
+        disconnectUser();
+        System.out.println("Game closed");
     }
 
     public void setUsername(String username) {
@@ -134,8 +137,6 @@ public class Client implements Runnable {
 
                 if(  !ui.ready(message+"Do you want to play again?") ){
 
-                    ui.exit();
-                    disconnectUser();
                     break;
                 }
 
@@ -151,6 +152,8 @@ public class Client implements Runnable {
 
         }
 
+        endGame();
+        System.exit(0);
     }
 
     private void assignUserData( String initialData){
@@ -198,7 +201,6 @@ public class Client implements Runnable {
         coloana = Integer.parseInt(components[2]);
 
         ui.setMove(String.valueOf(opponentSymbol), linie, coloana);
-        System.out.println("here");
         game.hit(linie,coloana, opponentSymbol);
 
     }
@@ -281,9 +283,17 @@ public class Client implements Runnable {
         try {
             response = in.readLine();
         } catch (IOException e) {
-            System.out.println("Error reading response for message:" + message);
-            e.printStackTrace();
+
+            if( message.equals("disconnect user") ){
+                response = "Disconnected from server";
+            }else{
+                e.printStackTrace();
+                response = "Error reading response for message:" + message;
+
+            }
+
         }
+
         return response;
 
     };
