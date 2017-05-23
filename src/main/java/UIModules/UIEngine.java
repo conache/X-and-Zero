@@ -85,4 +85,8 @@ public class UIEngine {
     public void exit() {
         board.exit();
     }
+
+    public String toString(){
+        return  "Ui element with user: "+board.getUsername();
+    }
 }

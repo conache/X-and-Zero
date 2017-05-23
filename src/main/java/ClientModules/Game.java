@@ -15,7 +15,7 @@ public class Game {
     }
 
     public boolean won(char symbol){
-        return board.hasDiagonal(symbol) || board.hasRow(symbol) || board.hasCol(symbol);
+        return board.hasDiagonal(symbol) || board.hasRow(symbol) || board.hasCol(symbol) || board.hasSecDiagonal(symbol);
     }
 
     public boolean full() {

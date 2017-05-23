@@ -3,9 +3,7 @@ package ServerModules;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by cristi on 5/19/17.
@@ -67,6 +65,15 @@ public class GameManager {
         return "username assigned";
     }
 
+    public String replay(String address){
+
+        String user = username.get(address);
+        System.out.println("Replay game for "+user);
+        opponent.remove(user);
+
+        return "ready to play another game";
+    }
+
     public String startGame(String address) throws InterruptedException {
 
         String user = username.get(address);
@@ -94,6 +101,26 @@ public class GameManager {
             return "X flag";
         }
 
+    }
+
+    public synchronized String disconnect(String address){
+
+        System.out.println("Disconnecting user "+username.get(address));
+
+        Iterator it = socket.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if( pair.getKey().equals(address)){
+                it.remove();
+                String user = username.remove(address);
+                String opp = opponent.get(user);
+                opponent.put(opp, null);
+                opponent.remove(user);
+                thread.remove(user);
+            }
+        }
+
+        return "disconnected user";
     }
 
     public String moveFrom(String address, String message){

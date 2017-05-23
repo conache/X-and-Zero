@@ -61,6 +61,10 @@ public class ServerReceiver implements Runnable {
                 System.out.println(message);
                 String response = dispatcher.dispatch(message);
                 out.println(response);
+                if( message.equals("disconnect user") ) {
+                    System.out.println("Stopped receiver");
+                    break;
+                }
             }
 
         }

@@ -14,7 +14,7 @@ public class Client implements Runnable {
 
     private Socket socket;
     private String username;
-    private final Thread th;
+    private Thread th = null;
     private PrintWriter out;
     private BufferedReader in;
     private Game game;
@@ -26,39 +26,67 @@ public class Client implements Runnable {
 
     public Client(String server, Integer serverPort) throws Exception {
 
-        this.th = new Thread(this);
         socket = new Socket(server, serverPort);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         this.ui = new UIEngine();
-        in.readLine();
-        initUsername();
-        th.start();
+        System.out.println("My ui "+this.ui);
+        System.out.println(in.readLine());
+
+       if ( initUsername() ) {
+            this.th = new Thread(this);
+            th.start();
+        }else{
+            ui.exit();
+            disconnectUser();
+        }
 
     }
 
-
     public void setUsername(String username) {
+
+        System.out.println("setting username to "+username);
         this.username = username;
+        ui.setUserName(username);
+
     }
 
     private boolean wantsEnemy(){
+
         String response;
 
         if( ui.ready("Do you want to play against a random user?") ){
 
             System.out.println("Waiting for opponent...");
             response = getOpponentUsername();
-            System.out.println("Opponent: "+response);
+            System.out.println("Set enemy to: "+response);
             ui.setEnemy(response);
 
             return true;
 
         }else{
-            //elimina din baza de date
+
+            disconnectUser();
         }
 
         return false;
+    }
+
+    private void disconnectUser(){
+
+        System.out.println("Disconnecting..");
+        System.out.println( sendMessage( "disconnect user") );
+        try{
+
+            System.out.println("closed socket");
+            in.close();
+            out.close();
+            socket.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void startNewGameSession(){
@@ -69,6 +97,7 @@ public class Client implements Runnable {
         response = requestStartGame();
         System.out.println(response);
         ui.init();
+
         try {
             playGame(response);
         } catch (IOException e) {
@@ -77,26 +106,49 @@ public class Client implements Runnable {
 
     }
 
+    private void restartGameSession(){
+
+        String response;
+
+        System.out.println("Starting game...");
+        response = requestStartGame();
+        System.out.println(response);
+
+        ui.reset();
+
+        try {
+            playGame(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void run() {
 
         while( wantsEnemy() ){
+
             startNewGameSession();
             if( !game.full() ){
 
-                String message = game.won(symbol) ? "Congatulations!! You won! " : "We are sorry :( You lost! ";
+                String message = game.won(symbol) ? "Congatulations, "+username+"!! You won! " : "We are sorry, "+username+" :( You lost! ";
 
                 if(  !ui.ready(message+"Do you want to play again?") ){
 
+                    ui.exit();
+                    disconnectUser();
+                    break;
                 }
 
             }else{
 
                 if ( ui.ready("This game has no winner! Do you want to play again?") ) {
-
-                    startNewGameSession();
+                    restartGameSession();
                 }
 
             }
+
+            System.out.println(sendMessage("replay game"));
+
         }
 
     }
@@ -117,13 +169,14 @@ public class Client implements Runnable {
         ArrayList<Integer> positions;
         String response;
 
-        System.out.println("Your turn");
-        positions = ui.getMove();
+        System.out.println("Your turn, "+ this.username );
+        System.out.println("Get move for "+this.username+" "+this.ui);
+        positions = this.ui.getMove();
         out.println("hit "+positions.get(0)+" "+positions.get(1)+" flag");
         game.hit( positions.get(0), positions.get(1), symbol);
+        ui.setMove(String.valueOf(symbol), positions.get(0), positions.get(1));
         response = in.readLine();
         System.out.println( "Server response:" + response );
-        ui.setMove(String.valueOf(symbol), positions.get(0), positions.get(1));
         hasFlag = false;
 
     }
@@ -145,6 +198,7 @@ public class Client implements Runnable {
         coloana = Integer.parseInt(components[2]);
 
         ui.setMove(String.valueOf(opponentSymbol), linie, coloana);
+        System.out.println("here");
         game.hit(linie,coloana, opponentSymbol);
 
     }
@@ -177,8 +231,12 @@ public class Client implements Runnable {
 
         do {
 
-            String username = ui.getUserName();
-            response = sendMessage( "username "+ username);
+            username = ui.getUserName();
+            if( username != null) {
+                response = sendMessage( "username "+ username);
+            }else {
+                return "game closed";
+            }
 
         } while( response.equals("used") );
 
@@ -187,11 +245,12 @@ public class Client implements Runnable {
         return response;
     }
 
-    private void initUsername(){
+    private boolean initUsername(){
 
         String response;
         response = sendUsername();
         System.out.println(response);
+        return !response.equals("game closed");
 
     }
 

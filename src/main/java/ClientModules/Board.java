@@ -74,6 +74,15 @@ public class Board {
         return true;
     }
 
+    public boolean hasSecDiagonal( char symbol ){
+
+        for( int row = 0; row < lines; row++){
+            if( board[row][columns-row-1] != symbol ) return false;
+        }
+
+        return true;
+    }
+
     public char[][] getMatrixRepresentation(){
         return board;
     }
