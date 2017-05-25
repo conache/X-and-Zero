@@ -4,6 +4,7 @@ package ClientModules;
  * Created by cristi on 5/22/17.
  */
 public class Board {
+
     private int lines;
     private int columns;
 

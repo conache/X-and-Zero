@@ -30,12 +30,14 @@ public class Client implements Runnable {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         this.ui = new UIEngine();
-        System.out.println("My ui "+this.ui);
-        System.out.println(in.readLine());
+
+        System.out.println("Server response: "+in.readLine());
 
        if ( initUsername() ) {
+
             this.th = new Thread(this);
             th.start();
+
        }else endGame();
 
     }
@@ -45,11 +47,59 @@ public class Client implements Runnable {
         while( wantsEnemy() ) {
 
             startNewGameSession();
-            if (breackLoop()) break;
+            if ( userExitedGame() ) break;
         }
 
         endGame();
         System.exit(0);
+
+    }
+
+    private String requestStartGame(){
+
+        String message = "start game";
+        return sendMessage(message);
+
+    }
+
+    private boolean userExitedGame() {
+
+        if ( game.won(symbol) || game.won(opponentSymbol) ) {
+
+            String message = game.won(symbol) ? "Congatulations, " + username + "!! You won! " :
+                                                "We are sorry, " + username + " :( You lost! ";
+            System.out.println( exitCurrentGame() );
+
+            if ( !ui.ready(message + "Do you want to play more with a better user?") ) return true;
+
+        } else {
+
+            if ( ui.ready("This game has no winner! Do you want to play again with this user?") ) {
+                startNewGameSession();
+                return userExitedGame();
+            }
+        }
+
+        return false;
+
+    }
+
+
+    private boolean wantsEnemy(){
+
+        if( ui.ready("Do you want to play against a random user?") ){
+
+            System.out.println("Waiting for opponent...");
+            String response = getOpponentUsername();
+            System.out.println("Set enemy to: "+response);
+
+            ui.setEnemy(response);
+
+            return true;
+
+        }else disconnectUser();
+
+        return false;
     }
 
     public void endGame(){
@@ -60,42 +110,12 @@ public class Client implements Runnable {
 
     }
 
-    public void setUsername(String username) {
-
-        System.out.println("setting username to "+username);
-        this.username = username;
-        ui.setUserName(username);
-
-    }
-
-    private boolean wantsEnemy(){
-
-        String response;
-
-        if( ui.ready("Do you want to play against a random user?") ){
-
-            System.out.println("Waiting for opponent...");
-            response = getOpponentUsername();
-            System.out.println("Set enemy to: "+response);
-            ui.setEnemy(response);
-
-            return true;
-
-        }else{
-
-            disconnectUser();
-        }
-
-        return false;
-    }
-
     private void disconnectUser(){
 
         System.out.println("Disconnecting..");
-        System.out.println( sendMessage( "disconnect user") );
+
         try{
 
-            System.out.println("closed socket");
             in.close();
             out.close();
             socket.close();
@@ -108,11 +128,10 @@ public class Client implements Runnable {
 
     private void startNewGameSession(){
 
-        String response;
-
         System.out.println("Starting game...");
-        response = requestStartGame();
+        String response = requestStartGame();
         System.out.println(response);
+
         ui.init();
 
         try {
@@ -124,36 +143,13 @@ public class Client implements Runnable {
     }
 
     private String exitCurrentGame(){
+
         String message = "exit current";
         return sendMessage(message);
-    }
-
-    public boolean breackLoop() {
-
-        if ( game.won(symbol) || game.won(opponentSymbol) ) {
-
-            String message = game.won(symbol) ? "Congatulations, " + username + "!! You won! " : "We are sorry, " + username + " :( You lost! ";
-
-            String response;
-            response = exitCurrentGame();
-            System.out.println(response);
-
-            if (!ui.ready(message + "Do you want to play more with a better user?") ) return true;
-
-        } else {
-
-            if (ui.ready("This game has no winner! Do you want to play again with this user?")) {
-                startNewGameSession();
-                return breackLoop();
-            }
-        }
-
-        return false;
 
     }
 
-
-    private void assignUserData( String initialData){
+    private void assignUserGameData( String initialData){
 
         won = false;
         String[] components = initialData.split(" ");
@@ -167,15 +163,19 @@ public class Client implements Runnable {
     private void move() throws IOException {
 
         ArrayList<Integer> positions;
-        String response;
+
         ui.unlockBoard();
+
         System.out.println("Your turn, "+ this.username );
         System.out.println("Get move for "+this.username+" "+this.ui);
+
         positions = this.ui.getMove();
+
         out.println("hit "+positions.get(0)+" "+positions.get(1)+" flag");
         game.hit( positions.get(0), positions.get(1), symbol);
         ui.setMove(String.valueOf(symbol), positions.get(0), positions.get(1));
-        response = in.readLine();
+
+        String response = in.readLine();
         System.out.println( "Server response:" + response );
         hasFlag = false;
 
@@ -205,15 +205,18 @@ public class Client implements Runnable {
 
     private void playGame(String initialData ) throws IOException {
 
-        assignUserData(initialData);
-
+        assignUserGameData(initialData);
 
         do{
+
             if( hasFlag ) {
+
                 game.showBoard();
                 move();
                 won = game.won(symbol);
+
             }else {
+
                 game.showBoard();
                 waitMove();
                 won = game.won(opponentSymbol);
@@ -222,6 +225,21 @@ public class Client implements Runnable {
             }
 
         } while( !won  && !game.full() );
+
+    }
+
+    public void setUsername(String username) {
+
+        System.out.println("setting username to "+username);
+        this.username = username;
+        ui.setUserName(username);
+
+    }
+
+    private String getOpponentUsername(){
+
+        String message = "opponent username";
+        return sendMessage(message);
 
     }
 
@@ -246,6 +264,7 @@ public class Client implements Runnable {
         return response;
     }
 
+    // set client's username
     private boolean initUsername(){
 
         String response;
@@ -255,24 +274,12 @@ public class Client implements Runnable {
 
     }
 
+    //Sends a message to server
+
     private String sendMessage(String message){
 
         out.println(message);
         return getResponseFromServer(message);
-
-    }
-
-    private String getOpponentUsername(){
-
-        String message = "opponent username";
-        return sendMessage(message);
-
-    }
-
-    private String requestStartGame(){
-
-        String message = "start game";
-        return sendMessage(message);
 
     }
 
