@@ -11,6 +11,7 @@ public class UIEngine {
     Board board;
     UserNameInput nameInput;
     Ready ready;
+    boolean first_game = true;
 
     public UIEngine()
     {
@@ -54,7 +55,7 @@ public class UIEngine {
 
     }
 
-     public void setMove(String symbol, int i, int j){
+    public void setMove(String symbol, int i, int j){
 
         board.setMove(symbol, i, j);
     }
@@ -62,9 +63,16 @@ public class UIEngine {
 
     public void init()
     {
-        board.initialize();
-        setMove("X",2,2);
-        reset();
+        if(first_game) {
+            board.initialize();
+            setMove("X", 2, 2);
+            reset();
+            first_game = false;
+        }
+        else
+        {
+            reset();
+        }
     }
 
     public void setEnemy(String enem)
@@ -74,7 +82,9 @@ public class UIEngine {
 
     public void reset()
     {
+
         board.reset();
+
     }
 
     public boolean ready(String enem)
@@ -84,5 +94,17 @@ public class UIEngine {
 
     public void exit() {
         board.exit();
+    }
+
+    public String toString(){
+        return  "Ui element with user: "+board.getUsername();
+    }
+
+    public void lockBoard(){
+        board.lockButtons();
+    }
+
+    public void unlockBoard(){
+        board.unlockButtons();
     }
 }

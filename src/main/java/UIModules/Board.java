@@ -31,6 +31,7 @@ class Board extends JFrame {
 
 
     public void setUsername(String un) {
+        this.username = un;
     }
 
     public void setSymbol(String symbol) {
@@ -40,6 +41,10 @@ class Board extends JFrame {
 
     public void setEnemy(String enemy) {
         this.enemy = enemy;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getSymbol() {
