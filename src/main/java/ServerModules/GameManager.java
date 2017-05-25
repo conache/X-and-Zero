@@ -65,15 +65,6 @@ public class GameManager {
         return "username assigned";
     }
 
-    public String replay(String address){
-
-        String user = username.get(address);
-        System.out.println("Replay game for "+user);
-        opponent.remove(user);
-
-        return "ready to play another game";
-    }
-
     public String startGame(String address) throws InterruptedException {
 
         String user = username.get(address);
@@ -126,7 +117,7 @@ public class GameManager {
 
     }
 
-    public String moveFrom(String address, String message){
+    public String sendMoveFrom(String address, String message){
 
         String user = username.get(address);
         String op = opponent.get(user);

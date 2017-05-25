@@ -1,7 +1,5 @@
 package ServerModules;
 
-import java.net.Socket;
-
 /**
  * Created by cristi on 5/19/17.
  */
@@ -26,14 +24,11 @@ public class RequestDispatcher {
             case "start":
                 return GameManager.instance().startGame(client);
             case "hit":
-                return GameManager.instance().moveFrom(client, message);
+                return GameManager.instance().sendMoveFrom(client, message);
             case "disconnect":
                 return GameManager.instance().disconnect(client);
-            case "replay":
-                return GameManager.instance().replay(client);
-            case "exit": {
+            case "exit":
                 return GameManager.instance().removeOpponentsFor(client);
-            }
             default:
                 return  "Request not recognised";
         }

@@ -16,8 +16,8 @@ public class Board {
         this.lines = lines;
         this.columns = columns;
 
-        for(int i=0; i<lines; i++){
-            for(int j=0; j<columns; j++){
+        for(int i = 0; i < lines; i++){
+            for(int j = 0; j < columns; j++){
                 board[i][j]='#';
             }
         }
@@ -26,15 +26,16 @@ public class Board {
 
     }
 
-    public void update(Integer linie, Integer coloana, char s){
-        board[linie][coloana] = s;
+    public void update(Integer linie, Integer coloana, char symbol){
+        board[linie][coloana] = symbol;
     }
 
+    // verify if it exists a column in board with equal values on it
     public boolean hasCol(char symbol){
 
         boolean check;
 
-        for(int col = 0; col<columns; col++){
+        for( int col = 0; col < columns; col++){
             check = true;
 
             for( int row = 1; row < lines; row++){
@@ -49,11 +50,12 @@ public class Board {
 
     }
 
+    //verify if it exists a row in board with equal values on it
     public boolean hasRow( char symbol ){
 
         boolean check;
 
-        for( int row = 0; row<lines; row++){
+        for( int row = 0; row < lines; row++){
             check = true;
 
             for( int col = 1; col < lines; col++){
@@ -66,6 +68,8 @@ public class Board {
         return false;
     }
 
+    //verify if there are only equal values on the first diagonal of board matrix
+
     public boolean hasDiagonal( char symbol ){
 
         for( int row = 0; row < lines; row++){
@@ -75,6 +79,7 @@ public class Board {
         return true;
     }
 
+    //verify if there are only equals values on the second diagonal of board matrix
     public boolean hasSecDiagonal( char symbol ){
 
         for( int row = 0; row < lines; row++){

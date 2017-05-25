@@ -102,7 +102,7 @@ public class Client implements Runnable {
         return false;
     }
 
-    public void endGame(){
+    private void endGame(){
 
         ui.exit();
         disconnectUser();
@@ -172,7 +172,7 @@ public class Client implements Runnable {
         positions = this.ui.getMove();
 
         out.println("hit "+positions.get(0)+" "+positions.get(1)+" flag");
-        game.hit( positions.get(0), positions.get(1), symbol);
+        game.set( positions.get(0), positions.get(1), symbol);
         ui.setMove(String.valueOf(symbol), positions.get(0), positions.get(1));
 
         String response = in.readLine();
@@ -199,7 +199,7 @@ public class Client implements Runnable {
         coloana = Integer.parseInt(components[2]);
 
         ui.setMove(String.valueOf(opponentSymbol), linie, coloana);
-        game.hit(linie,coloana, opponentSymbol);
+        game.set(linie,coloana, opponentSymbol);
 
     }
 
@@ -228,7 +228,7 @@ public class Client implements Runnable {
 
     }
 
-    public void setUsername(String username) {
+    private void setUsername(String username) {
 
         System.out.println("setting username to "+username);
         this.username = username;
@@ -303,7 +303,7 @@ public class Client implements Runnable {
 
         return response;
 
-    };
+    }
 
 
 }

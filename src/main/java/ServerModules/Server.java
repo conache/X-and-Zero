@@ -29,6 +29,7 @@ public class Server {
                 GameManager.instance().setSocket( clientSocket.getRemoteSocketAddress().toString(), clientSocket);
                 new ServerReceiver(clientSocket);
                 out.println("Connected");
+
             }
 
         }catch(Exception e){

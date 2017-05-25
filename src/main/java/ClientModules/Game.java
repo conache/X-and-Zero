@@ -11,7 +11,7 @@ public class Game {
         this.board = new Board( lines, columns);
     }
 
-    public void hit(Integer linie, Integer coloana, char symbol){
+    public void set(Integer linie, Integer coloana, char symbol){
         board.update(linie,coloana, symbol);
     }
 
@@ -19,6 +19,7 @@ public class Game {
         return board.hasDiagonal(symbol) || board.hasRow(symbol) || board.hasCol(symbol) || board.hasSecDiagonal(symbol);
     }
 
+    //verify if board matrix is full of valid symbols( not '#' )
     public boolean full() {
 
         char[][] b = board.getMatrixRepresentation();

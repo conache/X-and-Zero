@@ -1,6 +1,5 @@
 package ServerModules;
 
-import javax.xml.bind.annotation.W3CDomHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +11,6 @@ import java.net.Socket;
  */
 public class ServerReceiver implements Runnable {
 
-    private final Socket clientSocket;
     private Thread thread;
     private BufferedReader in = null;
     private PrintWriter out = null;
@@ -23,9 +21,9 @@ public class ServerReceiver implements Runnable {
         String clientAddress = clientSocket.getRemoteSocketAddress().toString();
         this.dispatcher = new RequestDispatcher( clientAddress );
         this.thread = new Thread(this, "ServerReceiver thread for "+clientAddress);
-        this.clientSocket = clientSocket;
 
         try{
+
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter( clientSocket.getOutputStream(), true );
             thread.start();
@@ -45,29 +43,35 @@ public class ServerReceiver implements Runnable {
     }
 
     private void closeInput(){
+
         if( in != null){
+
             try {
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
     private void readMessages() throws Exception{
+
         while(true){
+
             String message = in.readLine();
 
             if(message != null && !message.isEmpty() ){
+
                 System.out.println("Server receiver: "+message);
                 String response = dispatcher.dispatch(message);
                 out.println(response);
+
                 if( message.equals("disconnect user") ) {
                     System.out.println("Stopped receiver");
                     break;
                 }
             }
-
         }
     }
 
