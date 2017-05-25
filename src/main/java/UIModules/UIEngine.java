@@ -11,6 +11,7 @@ public class UIEngine {
     Board board;
     UserNameInput nameInput;
     Ready ready;
+    boolean first_game = true;
 
     public UIEngine()
     {
@@ -62,9 +63,16 @@ public class UIEngine {
 
     public void init()
     {
-        board.initialize();
-        setMove("X",2,2);
-        reset();
+        if(first_game) {
+            board.initialize();
+            setMove("X", 2, 2);
+            reset();
+            first_game = false;
+        }
+        else
+        {
+            reset();
+        }
     }
 
     public void setEnemy(String enem)

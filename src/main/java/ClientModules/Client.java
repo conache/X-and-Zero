@@ -109,40 +109,41 @@ public class Client implements Runnable {
 
     }
 
-    private void restartGameSession(){
-
-        String response;
-
-        System.out.println("Starting game...");
-        response = requestStartGame();
-        System.out.println(response);
-
-        ui.reset();
-
-        try {
-            playGame(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void restartGameSession(){
+//
+//        String response;
+//
+//        System.out.println("Starting game...");
+//        response = requestStartGame();
+//        System.out.println(response);
+//
+//        ui.reset();
+//
+//        try {
+//            playGame(response);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void run() {
 
         while( wantsEnemy() ){
 
             startNewGameSession();
+
             if( !game.full() ){
 
                 String message = game.won(symbol) ? "Congatulations, "+username+"!! You won! " : "We are sorry, "+username+" :( You lost! ";
 
-                if(  !ui.ready(message+"Do you want to play again?") ){
+                if(  !ui.ready(message+"Do you want to play another game?") ){
                     break;
                 }
 
             }else{
 
-                if ( ui.ready("This game has no winner! Do you want to play again?") ) {
-                    restartGameSession();
+                if ( ui.ready("This game has no winner! Do you want to play again with this user?") ) {
+                    startNewGameSession();
                 }
 
             }
