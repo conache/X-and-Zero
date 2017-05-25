@@ -108,19 +108,22 @@ public class GameManager {
         System.out.println("Disconnecting user "+username.get(address));
 
         Iterator it = socket.entrySet().iterator();
+
         while (it.hasNext()) {
+
             Map.Entry pair = (Map.Entry)it.next();
+
             if( pair.getKey().equals(address)){
+
                 it.remove();
-                String user = username.remove(address);
-                String opp = opponent.get(user);
-                opponent.put(opp, null);
-                opponent.remove(user);
-                thread.remove(user);
+                removeOpponentsFor(address);
+                thread.remove( username.remove(address) );
+
             }
         }
 
         return "disconnected user";
+
     }
 
     public String moveFrom(String address, String message){
@@ -149,4 +152,16 @@ public class GameManager {
 
         return null;
     }
+
+    public String removeOpponentsFor(String address){
+
+        String user = username.get(address);
+        System.out.println("Removing opponent for "+user);
+        String opp = opponent.get(user);
+        opponent.put(opp, null);
+        opponent.remove(user);
+        return "Opponent removed succesfully";
+
+    }
+
 }

@@ -31,6 +31,9 @@ public class RequestDispatcher {
                 return GameManager.instance().disconnect(client);
             case "replay":
                 return GameManager.instance().replay(client);
+            case "exit": {
+                return GameManager.instance().removeOpponentsFor(client);
+            }
             default:
                 return  "Request not recognised";
         }

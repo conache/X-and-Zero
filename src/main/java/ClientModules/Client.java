@@ -40,10 +40,24 @@ public class Client implements Runnable {
 
     }
 
+    public void run() {
+
+        while( wantsEnemy() ) {
+
+            startNewGameSession();
+            if (breackLoop()) break;
+        }
+
+        endGame();
+        System.exit(0);
+    }
+
     public void endGame(){
+
         ui.exit();
         disconnectUser();
         System.out.println("Game closed");
+
     }
 
     public void setUsername(String username) {
@@ -109,52 +123,35 @@ public class Client implements Runnable {
 
     }
 
-//    private void restartGameSession(){
-//
-//        String response;
-//
-//        System.out.println("Starting game...");
-//        response = requestStartGame();
-//        System.out.println(response);
-//
-//        ui.reset();
-//
-//        try {
-//            playGame(response);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private String exitCurrentGame(){
+        String message = "exit current";
+        return sendMessage(message);
+    }
 
-    public void run() {
+    public boolean breackLoop() {
 
-        while( wantsEnemy() ){
+        if ( game.won(symbol) || game.won(opponentSymbol) ) {
 
-            startNewGameSession();
+            String message = game.won(symbol) ? "Congatulations, " + username + "!! You won! " : "We are sorry, " + username + " :( You lost! ";
 
-            if( !game.full() ){
+            String response;
+            response = exitCurrentGame();
+            System.out.println(response);
 
-                String message = game.won(symbol) ? "Congatulations, "+username+"!! You won! " : "We are sorry, "+username+" :( You lost! ";
+            if (!ui.ready(message + "Do you want to play more with a better user?") ) return true;
 
-                if(  !ui.ready(message+"Do you want to play another game?") ){
-                    break;
-                }
+        } else {
 
-            }else{
-
-                if ( ui.ready("This game has no winner! Do you want to play again with this user?") ) {
-                    startNewGameSession();
-                }
-
+            if (ui.ready("This game has no winner! Do you want to play again with this user?")) {
+                startNewGameSession();
+                return breackLoop();
             }
-
-            System.out.println(sendMessage("replay game"));
-
         }
 
-        endGame();
-        System.exit(0);
+        return false;
+
     }
+
 
     private void assignUserData( String initialData){
 
@@ -235,6 +232,7 @@ public class Client implements Runnable {
         do {
 
             username = ui.getUserName();
+
             if( username != null) {
                 response = sendMessage( "username "+ username);
             }else {
@@ -280,7 +278,8 @@ public class Client implements Runnable {
 
     private String getResponseFromServer(String message){
 
-        String response = null;
+        String response;
+
         try {
             response = in.readLine();
         } catch (IOException e) {

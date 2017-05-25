@@ -4,6 +4,7 @@ package ClientModules;
  * Created by cristi on 5/22/17.
  */
 public class Game {
+
     private Board board;
 
     public Game(int lines, int columns, char symbol){
