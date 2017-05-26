@@ -108,7 +108,11 @@ public class GameManager {
 
                 it.remove();
                 removeOpponentsFor(address);
-                thread.remove( username.remove(address) );
+                String currentUser = username.get(address);
+                username.remove(currentUser);
+                thread.remove(currentUser);
+                System.out.println("Thread removed for "+currentUser);
+                System.out.println(thread);
 
             }
         }

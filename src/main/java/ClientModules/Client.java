@@ -113,7 +113,7 @@ public class Client implements Runnable {
     private void disconnectUser(){
 
         System.out.println("Disconnecting..");
-
+        sendMessage("disconnect user");
         try{
 
             in.close();
